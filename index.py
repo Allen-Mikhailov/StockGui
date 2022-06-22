@@ -1,45 +1,48 @@
-import PySimpleGUI as sg 
+import datetime as dt
+from multiprocessing.dummy import Array
+from os.path import exists
 import sys
-
-from matplotlib import pyplot as plt
 sys.executable
 
-from os.path import exists
+import PySimpleGUI as sg 
 
 import matplotlib 
-import datetime as dt
-import matplotlib 
-import pandas as pd
-import pandas_datareader.data as web 
+from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-dataPullType = "File"
+import pandas as pd
+import pandas_datareader.data as web
 
-def update_figure(data):
-    fig.clear()
-    fig.add_subplot(111).plot([],[])
-    axes=fig.axes
-    x=[i[0] for i in data]
-    y=[int(i[1]) for i in data]
-    axes[0].plot(x,y,'r-')
-    figure_canvas_agg.draw()
-    figure_canvas_agg.get_tk_widget().pack()
+inputOptions = ["File", "yahoo"]
+
+def CreateRow(i):
+    main = [[
+        sg.Combo(inputOptions, key="dataPullType"+str(i), default_value="File", readonly=True, enable_events=True),
+        sg.Input(key='dataInput'+str(i),expand_x=True, enable_events=True, default_text="test"),
+        sg.Input(key="columnInput"+str(i),size=(10,20))
+    ]]
+    Frame = sg.Frame(layout=main, key="Row"+str(i), title="")
+    
+    return [[Frame]]
+
+def Frame(element):
+    return sg.Frame(title="", layout=element)
 
 sg.theme("BlueMono")
 table_content=[]
+
+header = "Input Type   Data Input                                                                      Column #"
+
 layout=[
+    # Top Row
     [
-        sg.Text("Data Pulling:"),
-        sg.Combo(["File", "yahoo"], key="dataPullType", default_value=dataPullType, readonly=True, enable_events=True),
-        sg.Text("Column:"),
-        sg.Input(key="columnInput",size=(10,20))
+        sg.Text("", key="RowCounter"), 
+        sg.Button("Add Row", key="addRow"), 
+        sg.Button("Remove Row", key="rmRow"),
+        sg.Button("Refresh")
     ],
-    [sg.Text("", key="errLabel", text_color="red")],
-    [
-        sg.Text("...", key="dataPullTypeLabel"), 
-        sg.Input(key='dataInput',expand_x=True, enable_events=True),
-        sg.Button('Refresh')
-    ],
+
+    [sg.Column([[Frame([[sg.Text(header)]])]], key="inputRows")],
     [sg.Canvas(key='Canvas')]
 ]
 
@@ -51,54 +54,71 @@ figure_canvas_agg=FigureCanvasTkAgg(fig,window['Canvas'].TKCanvas)
 figure_canvas_agg.draw()
 figure_canvas_agg.get_tk_widget().pack()
 
-def UpdateDataPullType():
-    if dataPullType == "File":
-        window["dataPullTypeLabel"].update("File Name:")
-    else:
-        window["dataPullTypeLabel"].update("Stock Name:")
-        
-
-
 def UpdateContent():
     update_figure(table_content)
 
-# def Refresh():
 
-UpdateDataPullType()
+rows = 0
+rowArray = []
+def rowUpdate():
+    window["RowCounter"].update(str(rows))
+    window["rmRow"].update(visible=rows>0)
+
+rowUpdate()
+
+def Refresh(values):
+    # Clearing and Getting Ready for new plots
+    fig.clear()
+    fig.add_subplot(111).plot([],[])
+    axes=fig.axes
+
+    # Drawing all rows
+    for i in range(rows):
+
+        # Getting Data Pull type
+        dataPullType = values["dataPullType"+str(i)]
+
+        # Getting Data Frame
+        df = ""
+        if dataPullType == "File":
+            if not exists(values['dataInput'+str(i)]):
+                continue
+            df = pd.read_csv(values['dataInput'+str(i)])
+        elif dataPullType == "yahoo":
+            start=dt.datetime(2020,1,1)
+            end=dt.datetime(2022,6,19)
+            df = web.DataReader(values['dataInput'+str(i)], "yahoo", start, end)
+
+        data = df.values[:, int(values["columnInput"+str(i)])]
+
+        # Potting data
+        x=range(len(data))
+        y=data
+        axes[0].plot(x,y,'-')
+        figure_canvas_agg.draw()
+        figure_canvas_agg.get_tk_widget().pack()
 
 while True:
     event,values=window.read()
     if event == sg.WIN_CLOSED:
         break
 
-    if event == 'dataPullType':
-        dataPullType = values["dataPullType"]
-        UpdateDataPullType()
-    elif event == 'dataInput':
-        errmessage = ""
-        if dataPullType == "File":
-            if not exists(values['dataInput']):
-                errmessage = "Error: file \""+values['dataInput']+"\" does not exist"
-        window["errLabel"].update(errmessage)
-    elif event == "Refresh":
-        # Getting CSV
-        df = ""
-        if dataPullType == "File":
-            if not exists(values['dataInput']):
-                continue
-            df = pd.read_csv(values['dataInput'])
-        elif dataPullType == "yahoo":
-            start=dt.datetime(2020,1,1)
-            end=dt.datetime(2022,6,19)
-            df = web.DataReader(values['dataInput'], "yahoo", start, end)
+    if event=='addRow':
+        rowArray.append(CreateRow(rows))
+        window.extend_layout(window['inputRows'], rowArray[rows])
+        rowArray[rows] = rowArray[rows][0][0]
 
-        data = df.values[:, int(values["columnInput"])]
+        rows+=1
+        rowUpdate()
+    elif event=="rmRow":
+        rows-=1
+        rowUpdate()
 
-        table_content = []
-        for i in range(len(data)):
-            table_content.append([i+1, data[i]])
-        UpdateContent()
-
+        rowArray[rows].update(visible=False)
+        rowArray[rows].Widget.master.pack_forget()
+        rowArray.__delitem__(rows)
+    elif event=="Refresh":
+        Refresh(values)
 
 
 window.close()
