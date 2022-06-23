@@ -12,14 +12,13 @@ for i in range(len(lines)):
     splitline = rawline.split(" ")
     cuts = len(splitline)
 
-    if (cuts < 3):
-        print(i)
-        continue
-
     price = splitline[-1]
     Symbol = splitline[-2]
 
-    name = splitline[:-2]
+    name = "".join(splitline[:-2])
 
-    line = []
+    line = [name, Symbol, price]
     extracted.append(line)
+
+df = pandas.DataFrame(extracted, columns=["Name", "Symbol", "Market Cap"])
+df.to_csv("Tinkers.csv")
