@@ -1,6 +1,6 @@
 import pandas
 
-inputFile = "./rawTinkers.txt"
+inputFile = "./rawTickers.txt"
 rawtext = open(inputFile, "r").read()
 
 lines = rawtext.splitlines()
@@ -21,4 +21,4 @@ for i in range(len(lines)):
     extracted.append(line)
 
 df = pandas.DataFrame(extracted, columns=["Name", "Symbol", "Market Cap"])
-df.to_csv("Tinkers.csv")
+df.to_csv("Tickers.csv")
