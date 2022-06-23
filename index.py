@@ -34,6 +34,10 @@ sg.theme("BlueMono")
 
 header = "Input Type   Data Input                                                                      Column #"
 
+dayoptions = np.arange(1, 32).tolist()
+monthoptions = np.arange(1, 13).tolist()
+yearoptions = np.arange(2022, 1970, -1).tolist()
+
 layout=[
     # Top Row
     [
@@ -41,6 +45,20 @@ layout=[
         sg.Button("Add Row", key="addRow"), 
         sg.Button("Remove Row", key="rmRow"),
         sg.Button("Refresh")
+    ],
+
+    # Date input
+    [
+        sg.Text("Start: "),
+        sg.Combo(yearoptions,  key="startYear", size=(5, 10), readonly=True, default_value="2021"), 
+        sg.Combo(monthoptions, key="startMonth",  size=(5, 10), readonly=True, default_value="1"), 
+        sg.Combo(dayoptions,   key="startDay",    size=(5, 10), readonly=True, default_value="1")
+    ],
+    [
+        sg.Text("End:  "),
+        sg.Combo(yearoptions,  key="endYear", size=(5, 10), readonly=True, default_value="2021"), 
+        sg.Combo(monthoptions, key="endMonth",  size=(5, 10), readonly=True, default_value="1"), 
+        sg.Combo(dayoptions,   key="endDay",    size=(5, 10), readonly=True, default_value="1")
     ],
 
     [sg.Column([[Frame([[sg.Text(header)]])]], key="inputRows")],
@@ -63,7 +81,7 @@ def rowUpdate():
 
 rowUpdate()
 
-Tinkerdf = pd.read_csv("Tinkers.csv")
+Tinkerdf = pd.read_csv("Tickers.csv")
 symbols = Tinkerdf.values[:, 2]
 names = Tinkerdf.values[:, 1]
 
@@ -89,6 +107,27 @@ def getTinker(string):
 
     return ""
 
+def DateError(values, element, elementType):
+    valrangeMax, valrangeMin = 0, 0
+    if elementType == "Year":
+        valrangeMin = 1970
+        valrangeMax = 2022
+    elif elementType == "Month":
+        valrangeMin = 1
+        valrangeMax = 12
+    elif elementType == "Day":
+        valrangeMin = 1
+        valrangeMax = 31
+
+    try:
+        val = int(values[element])
+
+        if val <= valrangeMax and val >= valrangeMin:
+            return val
+        # else:
+
+    except:
+        return
 
 def Refresh(values):
     # Clearing and Getting Ready for new plots
@@ -109,8 +148,8 @@ def Refresh(values):
                 continue
             df = pd.read_csv(values['dataInput'+str(i)])
         elif dataPullType == "yahoo":
-            start=dt.datetime(2020,1,1)
-            end=dt.datetime(2022,6,19)
+            start=dt.datetime(int(values["startYear"]),int(values["startMonth"]),int(values["startDay"]))
+            end=dt.datetime(int(values["endYear"]),int(values["endMonth"]),int(values["endDay"]))
             df = web.DataReader(getTinker(values['dataInput'+str(i)]), "yahoo", start, end)
 
         data = df.values[:, int(values["columnInput"+str(i)] or 0)]
