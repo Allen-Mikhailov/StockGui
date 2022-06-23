@@ -4,6 +4,8 @@ from os.path import exists
 import sys
 sys.executable
 
+import numpy as np
+
 import PySimpleGUI as sg 
 
 import matplotlib 
@@ -61,6 +63,33 @@ def rowUpdate():
 
 rowUpdate()
 
+Tinkerdf = pd.read_csv("Tinkers.csv")
+symbols = Tinkerdf.values[:, 2]
+names = Tinkerdf.values[:, 1]
+
+for i in range(len(names)):
+    names[i] = names[i].upper()
+
+def getTinker(string):
+    string = string.upper()
+
+    if string == "":
+        return
+
+    if len(np.where(symbols == string)[0]) > 0:
+        return string
+    else:
+        cases = np.where(names == string)
+        if len(cases[0]) > 0:
+            return cases[0][0]
+
+        for i in range(len(names)):
+            if names[i].startswith(string):
+                return symbols[i]
+
+    return ""
+
+
 def Refresh(values):
     # Clearing and Getting Ready for new plots
     fig.clear()
@@ -82,9 +111,9 @@ def Refresh(values):
         elif dataPullType == "yahoo":
             start=dt.datetime(2020,1,1)
             end=dt.datetime(2022,6,19)
-            df = web.DataReader(values['dataInput'+str(i)], "yahoo", start, end)
+            df = web.DataReader(getTinker(values['dataInput'+str(i)]), "yahoo", start, end)
 
-        data = df.values[:, int(values["columnInput"+str(i)])]
+        data = df.values[:, int(values["columnInput"+str(i)] or 0)]
 
         # Potting data
         x=range(len(data))
