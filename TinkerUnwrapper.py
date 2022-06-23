@@ -7,15 +7,19 @@ lines = rawtext.splitlines()
 
 
 extracted = []
-for i in range(lines):
+for i in range(len(lines)):
     rawline = lines[i]
     splitline = rawline.split(" ")
     cuts = len(splitline)
 
-    price = splitline[-1]
-    Symbol = splitline[cuts-2]
+    if (cuts < 3):
+        print(i)
+        continue
 
-    print(price)
+    price = splitline[-1]
+    Symbol = splitline[-2]
+
+    name = splitline[:-2]
 
     line = []
     extracted.append(line)

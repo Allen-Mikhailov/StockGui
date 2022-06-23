@@ -2,8 +2,7 @@ Exxon Mobil Corporation XOM $384,845.80
 General Electric Company GE $346,042.10
 Microsoft Corporation MSFT $299,647.60
 BP p.l.c. BP $248,469.70
-Citigroup, Inc.
-C $231,977.70
+Citigroup, Inc. C $231,977.70
 Procter & Gamble Company (The) PG $194,814.00
 Wal-Mart Stores, Inc. WMT $191,978.50
 Pfizer, Inc. PFE $189,297.40
@@ -24,14 +23,12 @@ Sanofi-Aventis SA SNY $128,920.20
 Vodafone AirTouch Public Limited Company VOD $128,885.40
 Intel Corporation INTC $128,146.40
 International Business Machines Corporation IBM $127,641.00
-ENI S.p.A.
-E $121,462.50
+ENI S.p.A. E $121,462.50
 Cisco Systems, Inc. CSCO $114,067.10
 Berkshire Hathaway Inc. BRK/A $112,846.90
 UBS AG UBS $110,546.60
 Wells Fargo Cap IX WFC $104,281.10
-AT&T Inc.
-T $101,549.80
+AT&T Inc. T $101,549.80
 ROYAL DUTCH SHELL PLC RDS/B $99,061.00
 Coca-Cola Company (The) KO $98,450.10
 China Mobile (Hong Kong) Ltd. CHL $97,501.20
@@ -51,7 +48,6 @@ UnitedHealth Group Incorporated UNH $81,108.30
 Time Warner Inc. TWX $80,206.10
 QUALCOMM Incorporated QCOM $78,855.30
 ING Group, N.V. ING $78,822.70
-e
 NTT Docomo Inc DCM $77,676.50
 E.ON AG EON $77,504.80
 ASTRAZENECA PLC AZN $76,838.50
@@ -152,8 +148,7 @@ Lehman Brothers Fin SA LEH $37,627.80
 Telecom Italia S.P.A. TI $37,557.70
 Corning Incorporated GLW $37,114.60
 Suncor Energy Inc. SU $36,617.80
-Vivendi Universal
-V $36,115.40
+Vivendi Universal V $36,115.40
 E.I. du Pont de Nemours and Company DD $35,993.50
 CNOOC Limited CEO $35,344.00
 Australia & New Zealand Banking Group Limited ANZ $34,934.70
@@ -200,8 +195,7 @@ Transocean Inc. RIG $26,786.20
 Kimberly-Clark Corporation KMB $26,685.80
 Baker Hughes Incorporated BHI $26,472.40
 Duke Energy Corporation DUK $26,296.50
-Dominion Resources, Inc.
-D $26,229.80
+Dominion Resources, Inc. D $26,229.80
 SunTrust Banks, Inc. STI $25,863.80
 Southern Company (The) SO $25,821.60
 AEGON N.V. AEG $25,807.50
@@ -241,8 +235,7 @@ Monsanto Company MON $22,791.90
 ABB LTD ABB $22,680.20
 CVS Corporation CVS $22,602.10
 BCE, Inc. BCE $22,450.40
-Liberty Media Corporation
-L $22,417.50
+Liberty Media Corporation L $22,417.50
 Talisman Energy Inc. TLM $22,316.30
 Capital One Financial Corporation COF $22,208.70
 Caremark Rx, Inc. CMX $22,173.50
@@ -308,8 +301,7 @@ Chunghwa Telecom Co Ltd CHT $17,964.10
 Boston Scientific Corporation BSX $17,941.10
 Fuji Photo Film Co., Ltd. FUJIY $17,842.10
 XTO Energy Inc. XTO $17,825.70
-Kellogg Company
-K $17,770.70
+Kellogg Company K $17,770.70
 Ace Limited ACE $17,647.50
 Waste Management, Inc. WMI $17,427.00
 Staples, Inc. SPLS $17,341.30
@@ -353,8 +345,7 @@ Allergan, Inc. AGN $15,627.30
 Weatherford International, Inc. WFT $15,567.10
 Natl Bk Greece Ads NBG $15,552.60
 Sun Microsystems, Inc. SUNW $15,364.10
-Ford Motor Credit Company
-F $15,330.40
+Ford Motor Credit Company F $15,330.40
 Kohl's Corporation KSS $15,303.60
 Shinhan Financial Group Co Ltd SHG $15,300.50
 CIGNA Corporation CI $15,294.80
@@ -373,8 +364,7 @@ Harley-Davidson, Inc. HDI $14,700.20
 American Electric Power Company, Inc. AEP $14,692.30
 Chicago Mercantile Exchange Holdings CME $14,591.50
 Analog Devices, Inc. ADI $14,588.90
-Agilent Technologies, Inc.
-A $14,539.30
+Agilent Technologies, Inc. A $14,539.30
 Entergy Corporation ETR $14,421.90
 Amerada Hess Corporation AHC $14,401.80
 KeyCorp KEY $14,390.40
@@ -488,8 +478,7 @@ Rohm and Haas Company ROH $11,277.80
 Nordstrom, Inc. JWN $11,259.50
 Placer Dome Incorporated PDG $11,240.30
 China Netcom Group Corporation (Hong Kong) Limited CN $11,205.70
-Qwest Communications International Inc.
-Q $11,197.20
+Qwest Communications International Inc. Q $11,197.20
 iShares MSCI Japan Index Fund EWJ $11,194.60
 CHINA UNICOM LTD CHU $11,191.10
 Textron Inc. TXT $11,180.10
@@ -538,8 +527,7 @@ Eaton Corporation ETN $9,797.60
 Apollo Group, Inc. APOL $9,795.10
 PITNEY BOWES INC PBI $9,749.70
 L-3 Communications Holdings, Inc. LLL $9,733.30
-Inco Ltd.
-N $9,717.30
+Inco Ltd. N $9,717.30
 TDK Corporation TDK $9,686.90
 Coventry Health Care, Inc. CVH $9,678.00
 UnionBanCal Corporation UB $9,674.80
@@ -681,8 +669,7 @@ FREESCALE SEMICONDUCTOR INC FSL/B $6,817.00
 Plum Creek Timber Company, Inc. PCL $6,798.90
 Dassault Systemes, S.A. DASTY $6,792.20
 Elan Corporation, plc ELN $6,782.70
-USX Corporation
-X $6,774.70
+USX Corporation X $6,774.70
 Black & Decker Corporation (The) BDK $6,766.90
 Crown Castle International Corporation CCI $6,750.90
 CONSOL Energy Inc. CNX $6,745.10
@@ -1156,8 +1143,7 @@ Gildan Activewear, Inc. GIL $2,892.30
 AMTEK, Inc. AME $2,887.40
 Scientific Games Corp SGMS $2,877.10
 AVX Corporation AVX $2,871.50
-Ryder System, Inc.
-R $2,868.60
+Ryder System, Inc. R $2,868.60
 Fair, Isaac and Company, Incorporated FIC $2,865.40
 Brandywine Realty Trust BDN $2,864.20
 Energen Corporation EGN $2,859.50
@@ -1453,8 +1439,7 @@ Magellan Midstream Partners L.P. MMP $1,959.40
 Columbia Sportswear Company COLM $1,954.90
 Kilroy Realty Corporation KRC $1,954.90
 Sybase, Inc. SY $1,953.90
-Realty Income Corporation
-O $1,949.20
+Realty Income Corporation O $1,949.20
 South Financial Group Inc. (The) TSFG $1,947.10
 Hansen Natural Corporation HANS $1,946.90
 Desarrolladora Homex HXM $1,943.00
