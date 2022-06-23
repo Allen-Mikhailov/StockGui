@@ -29,7 +29,6 @@ def Frame(element):
     return sg.Frame(title="", layout=element)
 
 sg.theme("BlueMono")
-table_content=[]
 
 header = "Input Type   Data Input                                                                      Column #"
 
@@ -53,10 +52,6 @@ fig=matplotlib.figure.Figure(figsize=(5,4))
 figure_canvas_agg=FigureCanvasTkAgg(fig,window['Canvas'].TKCanvas)
 figure_canvas_agg.draw()
 figure_canvas_agg.get_tk_widget().pack()
-
-def UpdateContent():
-    update_figure(table_content)
-
 
 rows = 0
 rowArray = []
