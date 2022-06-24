@@ -1,4 +1,5 @@
 import datetime as dt
+import random
 from multiprocessing.dummy import Array
 from os.path import exists
 import sys
@@ -17,31 +18,37 @@ import pandas_datareader.data as web
 
 inputOptions = ["File", "yahoo"]
 
-def CreateRow(i):
-    main = [[
-        sg.Combo(inputOptions, key="dataPullType"+str(i), default_value="File", readonly=True, enable_events=True),
-        sg.Input(key='dataInput'+str(i),expand_x=True, enable_events=True, default_text="test"),
-        sg.Input(key="columnInput"+str(i),size=(10,20))
-    ]]
-    Frame = sg.Frame(layout=main, key="Row"+str(i), title="")
-    
-    return [[Frame]]
-
 def Frame(element):
     return sg.Frame(title="", layout=element)
 
 sg.theme("BlueMono")
 
 header = "Input Type   Data Input                                                                      Column #"
+colors = matplotlib.colors.CSS4_COLORS
+colorlist = list(colors)
 
 dayoptions = np.arange(1, 32).tolist()
 monthoptions = np.arange(1, 13).tolist()
 yearoptions = np.arange(2022, 1970, -1).tolist()
 
+def CreateRow(i):
+    color = random.choice(colorlist)
+    main = [[
+        sg.Combo(inputOptions, key="dataPullType"+str(i), default_value="File", readonly=True, enable_events=True),
+        sg.Input(key='dataInput'+str(i), enable_events=True, default_text="", size=(15, 10)),
+        sg.Combo(colorlist, key="colorPick"+str(i), default_value=color, readonly=True, enable_events=True),
+        sg.Text(key="colorDisplay"+str(i), size=(3, 1), background_color=colors[color]),
+        sg.Input(key="columnInput"+str(i),size=(10,20))
+    ]]
+    Frame = sg.Frame(layout=main, key="Row"+str(i), title="")
+    
+    return [[Frame]]
+
 layout=[
     # Top Row
     [
-        sg.Text("", key="RowCounter"), 
+        sg.Text(
+            "", key="RowCounter"), 
         sg.Button("Add Row", key="addRow"), 
         sg.Button("Remove Row", key="rmRow"),
         sg.Button("Refresh")
@@ -58,7 +65,7 @@ layout=[
         sg.Text("End:  "),
         sg.Combo(yearoptions,  key="endYear", size=(5, 10), readonly=True, default_value="2021"), 
         sg.Combo(monthoptions, key="endMonth",  size=(5, 10), readonly=True, default_value="1"), 
-        sg.Combo(dayoptions,   key="endDay",    size=(5, 10), readonly=True, default_value="1")
+        sg.Combo(dayoptions,   key="endDay",    size=(5, 10), readonly=True, default_value="10")
     ],
 
     [sg.Column([[Frame([[sg.Text(header)]])]], key="inputRows")],
@@ -123,11 +130,12 @@ def DateError(values, element, elementType):
         val = int(values[element])
 
         if val <= valrangeMax and val >= valrangeMin:
+            window[element].update(background_color="white")
             return val
-        # else:
-
+        else:
+            window[element].update(background_color="red")
     except:
-        return
+        window[element].update(background_color="red")
 
 def Refresh(values):
     # Clearing and Getting Ready for new plots
@@ -148,6 +156,7 @@ def Refresh(values):
                 continue
             df = pd.read_csv(values['dataInput'+str(i)])
         elif dataPullType == "yahoo":
+
             start=dt.datetime(int(values["startYear"]),int(values["startMonth"]),int(values["startDay"]))
             end=dt.datetime(int(values["endYear"]),int(values["endMonth"]),int(values["endDay"]))
             df = web.DataReader(getTinker(values['dataInput'+str(i)]), "yahoo", start, end)
@@ -157,7 +166,7 @@ def Refresh(values):
         # Potting data
         x=range(len(data))
         y=data
-        axes[0].plot(x,y,'-')
+        axes[0].plot(x,y, '-', color = colors[values["colorPick"+str(i)]])
         figure_canvas_agg.draw()
         figure_canvas_agg.get_tk_widget().pack()
 
@@ -180,6 +189,10 @@ while True:
         rowArray[rows].update(visible=False)
         rowArray[rows].Widget.master.pack_forget()
         rowArray.__delitem__(rows)
+    elif event.startswith("colorPick"):
+        rowIndex = event[-1]
+        window["colorDisplay"+rowIndex].update("", background_color=colors[values[event]])
+
     elif event=="Refresh":
         Refresh(values)
 
