@@ -13,6 +13,8 @@ import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from sklearn.linear_model import LinearRegression
+
 import pandas as pd
 import pandas_datareader.data as web
 
@@ -164,9 +166,20 @@ def Refresh(values):
         data = df.values[:, int(values["columnInput"+str(i)] or 0)]
 
         # Potting data
-        x=range(len(data))
+        plotcolor = colors[values["colorPick"+str(i)]]
+
+        x=np.arange(len(data))
         y=data
-        axes[0].plot(x,y, '-', color = colors[values["colorPick"+str(i)]])
+        axes[0].plot(x,y, '-', color = plotcolor)
+
+        # Linear Regression
+        x = x.reshape(len(x), 1)
+        y = y.reshape(len(y), 1)
+
+        reg = LinearRegression().fit(x, y)
+        n = len(data)-1
+        axes[0].plot([0, n],[reg.predict([[0]])[0][0], reg.predict([[n]])[0][0]], '-', color = plotcolor)
+
         figure_canvas_agg.draw()
         figure_canvas_agg.get_tk_widget().pack()
 
