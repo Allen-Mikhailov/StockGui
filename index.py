@@ -31,7 +31,7 @@ colorlist = list(colors)
 
 dayoptions = np.arange(1, 32).tolist()
 monthoptions = np.arange(1, 13).tolist()
-yearoptions = np.arange(2022, 1970, -1).tolist()
+yearoptions = np.arange(2022, 1969, -1).tolist()
 
 def CreateRow(i):
     color = random.choice(colorlist)
@@ -90,14 +90,14 @@ def rowUpdate():
 
 rowUpdate()
 
-Tinkerdf = pd.read_csv("Tickers.csv")
-symbols = Tinkerdf.values[:, 2]
-names = Tinkerdf.values[:, 1]
+Tickerdf = pd.read_csv("Tickers.csv")
+symbols = Tickerdf.values[:, 2]
+names = Tickerdf.values[:, 1]
 
 for i in range(len(names)):
     names[i] = names[i].upper()
 
-def getTinker(string):
+def getTicker(string):
     string = string.upper()
 
     if string == "":
@@ -116,28 +116,28 @@ def getTinker(string):
 
     return ""
 
-def DateError(values, element, elementType):
-    valrangeMax, valrangeMin = 0, 0
-    if elementType == "Year":
-        valrangeMin = 1970
-        valrangeMax = 2022
-    elif elementType == "Month":
-        valrangeMin = 1
-        valrangeMax = 12
-    elif elementType == "Day":
-        valrangeMin = 1
-        valrangeMax = 31
+# def DateError(values, element, elementType):
+#     valrangeMax, valrangeMin = 0, 0
+#     if elementType == "Year":
+#         valrangeMin = 1970
+#         valrangeMax = 2022
+#     elif elementType == "Month":
+#         valrangeMin = 1
+#         valrangeMax = 12
+#     elif elementType == "Day":
+#         valrangeMin = 1
+#         valrangeMax = 31
 
-    try:
-        val = int(values[element])
+#     try:
+#         val = int(values[element])
 
-        if val <= valrangeMax and val >= valrangeMin:
-            window[element].update(background_color="white")
-            return val
-        else:
-            window[element].update(background_color="red")
-    except:
-        window[element].update(background_color="red")
+#         if val <= valrangeMax and val >= valrangeMin:
+#             window[element].update(background_color="white")
+#             return val
+#         else:
+#             window[element].update(background_color="red")
+#     except:
+#         window[element].update(background_color="red")
 
 def Refresh(values):
     # Clearing and Getting Ready for new plots
@@ -161,7 +161,7 @@ def Refresh(values):
 
             start=dt.datetime(int(values["startYear"]),int(values["startMonth"]),int(values["startDay"]))
             end=dt.datetime(int(values["endYear"]),int(values["endMonth"]),int(values["endDay"]))
-            df = web.DataReader(getTinker(values['dataInput'+str(i)]), "yahoo", start, end)
+            df = web.DataReader(getTicker(values['dataInput'+str(i)]), "yahoo", start, end)
 
         data = df.values[:, int(values["columnInput"+str(i)] or 0)]
 
