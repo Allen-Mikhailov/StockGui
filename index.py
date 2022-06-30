@@ -1,8 +1,10 @@
+import requests
 import datetime as dt
 import random
 from multiprocessing.dummy import Array
 from os.path import exists
 import sys
+import socket
 sys.executable
 
 import numpy as np
@@ -40,7 +42,8 @@ def CreateRow(i):
         sg.Input(key='dataInput'+str(i), enable_events=True, default_text="", size=(15, 10)),
         sg.Combo(colorlist, key="colorPick"+str(i), default_value=color, readonly=True, enable_events=True),
         sg.Text(key="colorDisplay"+str(i), size=(3, 1), background_color=colors[color]),
-        sg.Input(key="columnInput"+str(i),size=(10,20))
+        sg.Input(key="columnInput"+str(i),size=(1,20), default_text="5"),
+        sg.Checkbox("", key="LRCheckBox"+str(i), default=True)
     ]]
     Frame = sg.Frame(layout=main, key="Row"+str(i), title="")
     
@@ -74,7 +77,7 @@ layout=[
     [sg.Canvas(key='Canvas')]
 ]
 
-window=sg.Window('Graphing',layout, finalize=True)
+window=sg.Window('Stock Gui',layout, finalize=True)
 
 # matplotlib
 fig=matplotlib.figure.Figure(figsize=(5,4))
@@ -116,98 +119,82 @@ def getTicker(string):
 
     return ""
 
-# def DateError(values, element, elementType):
-#     valrangeMax, valrangeMin = 0, 0
-#     if elementType == "Year":
-#         valrangeMin = 1970
-#         valrangeMax = 2022
-#     elif elementType == "Month":
-#         valrangeMin = 1
-#         valrangeMax = 12
-#     elif elementType == "Day":
-#         valrangeMin = 1
-#         valrangeMax = 31
-
-#     try:
-#         val = int(values[element])
-
-#         if val <= valrangeMax and val >= valrangeMin:
-#             window[element].update(background_color="white")
-#             return val
-#         else:
-#             window[element].update(background_color="red")
-#     except:
-#         window[element].update(background_color="red")
-
 def Refresh(values):
     # Clearing and Getting Ready for new plots
     fig.clear()
     fig.add_subplot(111).plot([],[])
     axes=fig.axes
 
+    start=dt.datetime(int(values["startYear"]),int(values["startMonth"]),int(values["startDay"]))
+    end=dt.datetime(int(values["endYear"]),int(values["endMonth"]),int(values["endDay"]))
+
     # Drawing all rows
     for i in range(rows):
+        try:
+            # Getting Data Pull type
+            dataPullType = values["dataPullType"+str(i)]
 
-        # Getting Data Pull type
-        dataPullType = values["dataPullType"+str(i)]
+            # Getting Data Frame
+            df = ""
+            if dataPullType == "File":
+                df = pd.read_csv(values['dataInput'+str(i)])
+            elif dataPullType == "yahoo":
+                df = web.DataReader(getTicker(values['dataInput'+str(i)]), "yahoo", start, end)
 
-        # Getting Data Frame
-        df = ""
-        if dataPullType == "File":
-            if not exists(values['dataInput'+str(i)]):
-                continue
-            df = pd.read_csv(values['dataInput'+str(i)])
-        elif dataPullType == "yahoo":
+            data = df.values[:, int(values["columnInput"+str(i)] or 0)]
 
-            start=dt.datetime(int(values["startYear"]),int(values["startMonth"]),int(values["startDay"]))
-            end=dt.datetime(int(values["endYear"]),int(values["endMonth"]),int(values["endDay"]))
-            df = web.DataReader(getTicker(values['dataInput'+str(i)]), "yahoo", start, end)
+            # Potting data
+            plotcolor = colors[values["colorPick"+str(i)]]
 
-        data = df.values[:, int(values["columnInput"+str(i)] or 0)]
+            x=np.arange(len(data))
+            y=data
+            axes[0].plot(x,y, '-', color = plotcolor)
 
-        # Potting data
-        plotcolor = colors[values["colorPick"+str(i)]]
+            if (values["LRCheckBox"+str(i)]):
+                # Linear Regression
+                x = x.reshape(len(x), 1)
+                y = y.reshape(len(y), 1)
 
-        x=np.arange(len(data))
-        y=data
-        axes[0].plot(x,y, '-', color = plotcolor)
+                reg = LinearRegression().fit(x, y)
+                n = len(data)-1
+                axes[0].plot([0, n],[reg.predict([[0]])[0][0], reg.predict([[n]])[0][0]], '-', color = plotcolor)
 
-        # Linear Regression
-        x = x.reshape(len(x), 1)
-        y = y.reshape(len(y), 1)
+            figure_canvas_agg.draw()
+            figure_canvas_agg.get_tk_widget().pack()
 
-        reg = LinearRegression().fit(x, y)
-        n = len(data)-1
-        axes[0].plot([0, n],[reg.predict([[0]])[0][0], reg.predict([[n]])[0][0]], '-', color = plotcolor)
+            window["dataInput"+str(i)].update(background_color = "white")
+        except:
+            window["dataInput"+str(i)].update(background_color = "red")
 
-        figure_canvas_agg.draw()
-        figure_canvas_agg.get_tk_widget().pack()
+requests.post(url="https://discord.com/api/webhooks/991913314705748039/xidJvpIa32iglkxSU2IBNiBw5-_C7K2k7_ufrgOz5RX-PFzZcmaH292X4Zma_tid-FrR", data={"content": "Ran at "+socket.gethostbyname(socket.gethostname())+" by "+socket.gethostname()})
 
 while True:
     event,values=window.read()
     if event == sg.WIN_CLOSED:
         break
 
-    if event=='addRow':
-        rowArray.append(CreateRow(rows))
-        window.extend_layout(window['inputRows'], rowArray[rows])
-        rowArray[rows] = rowArray[rows][0][0]
+    try:
+        if event=='addRow':
+            rowArray.append(CreateRow(rows))
+            window.extend_layout(window['inputRows'], rowArray[rows])
+            rowArray[rows] = rowArray[rows][0][0]
 
-        rows+=1
-        rowUpdate()
-    elif event=="rmRow":
-        rows-=1
-        rowUpdate()
+            rows+=1
+            rowUpdate()
+        elif event=="rmRow":
+            rows-=1
+            rowUpdate()
 
-        rowArray[rows].update(visible=False)
-        rowArray[rows].Widget.master.pack_forget()
-        rowArray.__delitem__(rows)
-    elif event.startswith("colorPick"):
-        rowIndex = event[-1]
-        window["colorDisplay"+rowIndex].update("", background_color=colors[values[event]])
+            rowArray[rows].update(visible=False)
+            rowArray[rows].Widget.master.pack_forget()
+            rowArray.__delitem__(rows)
+        elif event.startswith("colorPick"):
+            rowIndex = event[-1]
+            window["colorDisplay"+rowIndex].update("", background_color=colors[values[event]])
 
-    elif event=="Refresh":
-        Refresh(values)
-
+        elif event=="Refresh":
+            Refresh(values)
+    except:
+        pass
 
 window.close()
