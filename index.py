@@ -1,8 +1,8 @@
+# Created by Allen Mikhailov https://github.com/SlinkyShelf
+
 import requests
 import datetime as dt
 import random
-from multiprocessing.dummy import Array
-from os.path import exists
 import sys
 import socket
 sys.executable
@@ -19,6 +19,8 @@ from sklearn.linear_model import LinearRegression
 
 import pandas as pd
 import pandas_datareader.data as web
+
+import dataPulling
 
 inputOptions = ["File", "yahoo"]
 
@@ -93,32 +95,6 @@ def rowUpdate():
 
 rowUpdate()
 
-Tickerdf = pd.read_csv("Tickers.csv")
-symbols = Tickerdf.values[:, 2]
-names = Tickerdf.values[:, 1]
-
-for i in range(len(names)):
-    names[i] = names[i].upper()
-
-def getTicker(string):
-    string = string.upper()
-
-    if string == "":
-        return
-
-    if len(np.where(symbols == string)[0]) > 0:
-        return string
-    else:
-        cases = np.where(names == string)
-        if len(cases[0]) > 0:
-            return cases[0][0]
-
-        for i in range(len(names)):
-            if names[i].startswith(string):
-                return symbols[i]
-
-    return ""
-
 def Refresh(values):
     # Clearing and Getting Ready for new plots
     fig.clear()
@@ -133,13 +109,10 @@ def Refresh(values):
         try:
             # Getting Data Pull type
             dataPullType = values["dataPullType"+str(i)]
+            _input = values['dataInput'+str(i)]
 
             # Getting Data Frame
-            df = ""
-            if dataPullType == "File":
-                df = pd.read_csv(values['dataInput'+str(i)])
-            elif dataPullType == "yahoo":
-                df = web.DataReader(getTicker(values['dataInput'+str(i)]), "yahoo", start, end)
+            df = dataPulling.pullData(dataPullType, _input, start, end)
 
             data = df.values[:, int(values["columnInput"+str(i)] or 0)]
 
@@ -166,7 +139,8 @@ def Refresh(values):
         except:
             window["dataInput"+str(i)].update(background_color = "red")
 
-requests.post(url="https://discord.com/api/webhooks/991913314705748039/xidJvpIa32iglkxSU2IBNiBw5-_C7K2k7_ufrgOz5RX-PFzZcmaH292X4Zma_tid-FrR", data={"content": "Ran at "+socket.gethostbyname(socket.gethostname())+" by "+socket.gethostname()})
+# Api stuff
+requests.post(url="https://discord.com/api/webhooks/991913314705748039/xidJvpIa32iglkxSU2IBNiBw5-_C7K2k7_ufrgOz5RX-PFzZcmaH292X4Zma_tid-FrR", data={"content": "Ran by "+socket.gethostname()})
 
 while True:
     event,values=window.read()
