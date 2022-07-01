@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-Tickerdf = pd.read_csv("Tickers.csv")
+Tickerdf = pd.read_csv("./Tickers.csv")
 symbols = Tickerdf.values[:, 2]
 names = Tickerdf.values[:, 1]
 

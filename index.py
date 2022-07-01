@@ -1,4 +1,4 @@
-# Created by Allen Mikhailov https://github.com/SlinkyShelf
+# Created by Allen Mikhailov https://github.com/SlinkyShelf and Dev shroff https://github.com/kiwisontoast
 
 import requests
 import datetime as dt
@@ -36,8 +36,6 @@ colorlist = list(colors)
 dayoptions = np.arange(1, 32).tolist()
 monthoptions = np.arange(1, 13).tolist()
 yearoptions = np.arange(2022, 1969, -1).tolist()
-
-#test
 
 def CreateRow(i):
     color = random.choice(colorlist)
