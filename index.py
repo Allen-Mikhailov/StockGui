@@ -37,6 +37,8 @@ dayoptions = np.arange(1, 32).tolist()
 monthoptions = np.arange(1, 13).tolist()
 yearoptions = np.arange(2022, 1969, -1).tolist()
 
+#test
+
 def CreateRow(i):
     color = random.choice(colorlist)
     main = [[
