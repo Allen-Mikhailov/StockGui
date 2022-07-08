@@ -1,5 +1,5 @@
 # Created by Allen Mikhailov https://github.com/SlinkyShelf and Dev shroff https://github.com/kiwisontoast
-
+import inspect
 import requests
 import datetime as dt
 import random
@@ -22,7 +22,7 @@ import pandas_datareader.data as web
 
 import dataPulling
 
-inputOptions = ["File", "yahoo"]
+import layout
 
 def Frame(element):
     return sg.Frame(title="", layout=element)
@@ -51,35 +51,7 @@ def CreateRow(i):
     
     return [[Frame]]
 
-layout=[
-    # Top Row
-    [
-        sg.Text(
-            "", key="RowCounter"), 
-        sg.Button("Add Row", key="addRow"), 
-        sg.Button("Remove Row", key="rmRow"),
-        sg.Button("Refresh")
-    ],
-
-    # Date input
-    [
-        sg.Text("Start: "),
-        sg.Combo(yearoptions,  key="startYear", size=(5, 10), readonly=True, default_value="2021"), 
-        sg.Combo(monthoptions, key="startMonth",  size=(5, 10), readonly=True, default_value="1"), 
-        sg.Combo(dayoptions,   key="startDay",    size=(5, 10), readonly=True, default_value="1")
-    ],
-    [
-        sg.Text("End:  "),
-        sg.Combo(yearoptions,  key="endYear", size=(5, 10), readonly=True, default_value="2021"), 
-        sg.Combo(monthoptions, key="endMonth",  size=(5, 10), readonly=True, default_value="1"), 
-        sg.Combo(dayoptions,   key="endDay",    size=(5, 10), readonly=True, default_value="10")
-    ],
-
-    [sg.Column([[Frame([[sg.Text(header)]])]], key="inputRows")],
-    [sg.Canvas(key='Canvas')]
-]
-
-window=sg.Window('Stock Gui',layout, finalize=True)
+window=sg.Window('Stock Gui',layout.layout, finalize=True)
 
 # matplotlib
 fig=matplotlib.figure.Figure(figsize=(5,4))
@@ -87,13 +59,7 @@ figure_canvas_agg=FigureCanvasTkAgg(fig,window['Canvas'].TKCanvas)
 figure_canvas_agg.draw()
 figure_canvas_agg.get_tk_widget().pack()
 
-rows = 0
 rowArray = []
-def rowUpdate():
-    window["RowCounter"].update(str(rows))
-    window["rmRow"].update(visible=rows>0)
-
-rowUpdate()
 
 def Refresh(values):
     # Clearing and Getting Ready for new plots
@@ -138,37 +104,47 @@ def Refresh(values):
             window["dataInput"+str(i)].update(background_color = "white")
         except:
             window["dataInput"+str(i)].update(background_color = "red")
+        
 
-# Api stuff
-requests.post(url="https://discord.com/api/webhooks/991913314705748039/xidJvpIa32iglkxSU2IBNiBw5-_C7K2k7_ufrgOz5RX-PFzZcmaH292X4Zma_tid-FrR", data={"content": "Ran by "+socket.gethostname()})
-
+index = 0
 while True:
-    event,values=window.read()
-    if event == sg.WIN_CLOSED:
+    rawEvent,values=window.read()
+    if rawEvent == sg.WIN_CLOSED:
         break
 
-    try:
-        if event=='addRow':
-            rowArray.append(CreateRow(rows))
-            window.extend_layout(window['inputRows'], rowArray[rows])
-            rowArray[rows] = rowArray[rows][0][0]
+    if type(rawEvent) != str:
+        continue
 
-            rows+=1
-            rowUpdate()
-        elif event=="rmRow":
-            rows-=1
-            rowUpdate()
+    eventArgs = rawEvent.split("/")
+    event = eventArgs[0]
 
-            rowArray[rows].update(visible=False)
-            rowArray[rows].Widget.master.pack_forget()
-            rowArray.__delitem__(rows)
-        elif event.startswith("colorPick"):
-            rowIndex = event[-1]
-            window["colorDisplay"+rowIndex].update("", background_color=colors[values[event]])
+    if event=='addRow':
+        dataPullType = values["dataPullType"]
 
-        elif event=="Refresh":
-            Refresh(values)
-    except:
-        pass
+        frame, layoutM = layout.CreateNewRow(values, index)
+
+        rowData = {"dataPullType": dataPullType, "obj": frame[0][0], "index": index, "layout": layoutM}
+
+        try:
+            rowArray[index] = rowData
+        except:
+            rowArray.append(rowData)
+
+        window.extend_layout(window['RowColumn'], frame)
+
+        index += 1
+
+    elif event=="rmRow":
+        row = int(eventArgs[1])
+
+        rowArray[row]["obj"].update(visible=False)
+        rowArray[row]["obj"].Widget.master.pack_forget()
+        rowArray[row] = None
+    elif event == "colorPick":
+        rowIndex = event[-1]
+        window["colorDisplay"+rowIndex].update("", background_color=colors[values[event]])
+
+    elif event=="Refresh":
+        Refresh(values)
 
 window.close()
