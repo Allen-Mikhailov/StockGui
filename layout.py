@@ -5,14 +5,16 @@ import random
 
 inputOptions = ["File", "yahoo"]
 
-colors = mpl.colors.CSS4_COLORS
+colors = mpl.colors.CSS4_COLORS.copy()
+colors.update(mpl.colors.TABLEAU_COLORS)
 colorlist = list(colors)
 
 dayoptions = np.arange(1, 32).tolist()
 monthoptions = np.arange(1, 13).tolist()
 yearoptions = np.arange(2022, 1969, -1).tolist()
 
-rowHeader = [sg.Combo(inputOptions, key="dataPullType", default_value="File", readonly=True, enable_events=True), sg.Button("+", tooltip="Add Row", key="addRow")]
+rowHeader = [sg.Combo(inputOptions, key="dataPullType", default_value="File", readonly=True, enable_events=True), 
+    sg.Button("+", tooltip="Add Row", key="addRow")]
 
 rowData = [
     rowHeader,
@@ -22,8 +24,20 @@ rowData = [
 canvas = [[sg.Canvas(key="Canvas")]]
 
 def CreateNewRow(values, index):
+    sindex = str(index)
     color = random.choice(colorlist)
     dataPullType = values["dataPullType"]
+
+    coloroptions = list(mpl.colors.TABLEAU_COLORS)
+    for i in range(len(coloroptions)):
+        coloroptions[i] = coloroptions[i].replace("tab:", "")+"::/"+"colorInput/"+sindex+"/"+coloroptions[i]
+
+    advancedColorOptions = list(mpl.colors.CSS4_COLORS)
+    for i in range(len(advancedColorOptions)):
+        advancedColorOptions[i] = advancedColorOptions[i]+"::/"+"colorInput/"+sindex+"/"+advancedColorOptions[i]
+
+    coloroptions.append("Advanced")
+    coloroptions.append(advancedColorOptions)
 
     tooltip = ""
     if dataPullType=="yahoo":
@@ -31,14 +45,11 @@ def CreateNewRow(values, index):
     else:
         tooltip = "File Name"
 
-    sindex = str(index)
-
     layout = [[
-        sg.Text(key="colorDisplay/"+sindex, size=(2, 1), background_color=colors[color]),
+        sg.Text(key="colorDisplay/"+sindex, size=(2, 1), background_color=colors[color], right_click_menu=["", coloroptions]),
         sg.Input(key='dataInput/'+sindex, enable_events=True, default_text="", size=(15, 10), tooltip=tooltip),
         sg.Input(key="columnInput/"+sindex,size=(1,20), default_text="5", tooltip="Column"),
         sg.Checkbox("", key="LRCheckBox/"+sindex, default=True, tooltip="Run Linear Regression"),
-        sg.Combo(colorlist, key="colorPick/"+sindex, default_value=color, readonly=True, enable_events=True),
         sg.Button("X", tooltip="Remove Row", key="rmRow/"+sindex)
     ]]
 

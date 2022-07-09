@@ -24,7 +24,9 @@ import dataPulling
 
 import layout
 
-colors = matplotlib.colors.CSS4_COLORS
+colors = matplotlib.colors.CSS4_COLORS.copy()
+colors.update(matplotlib.colors.TABLEAU_COLORS)
+colorlist = list(colors)
 
 sg.theme("BlueMono")
 
@@ -93,13 +95,13 @@ while True:
     if rawEvent == sg.WIN_CLOSED:
         break
 
-    print(rawEvent)
-
     if type(rawEvent) != str:
         continue
 
     eventArgs = rawEvent.split("/")
     event = eventArgs[0]
+
+    print(eventArgs)
 
     if event=='addRow':
         dataPullType = values["dataPullType"]
@@ -123,9 +125,9 @@ while True:
         rowArray[row]["obj"].update(visible=False)
         rowArray[row]["obj"].Widget.master.pack_forget()
         rowArray[row] = None
-    elif event == "colorPick":
-        row = eventArgs[1]
-        window["colorDisplay/"+row].update("", background_color=colors[values[rawEvent]])
+    elif len(eventArgs) > 2 and eventArgs[1] == "colorInput":
+        row = eventArgs[2]
+        window["colorDisplay/"+row].update("", background_color=colors[eventArgs[3]])
 
     elif event=="Refresh":
         Refresh(values)
