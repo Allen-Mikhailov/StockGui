@@ -34,8 +34,11 @@ def CreateNewRow(values, index):
     sindex = str(index)
 
     layout = [[
-        sg.Text(key="colorDisplay/"+sindex, size=(3, 1), background_color=colors[color]),
+        sg.Text(key="colorDisplay/"+sindex, size=(2, 1), background_color=colors[color]),
         sg.Input(key='dataInput/'+sindex, enable_events=True, default_text="", size=(15, 10), tooltip=tooltip),
+        sg.Input(key="columnInput/"+sindex,size=(1,20), default_text="5", tooltip="Column"),
+        sg.Checkbox("", key="LRCheckBox/"+sindex, default=True, tooltip="Run Linear Regression"),
+        sg.Combo(colorlist, key="colorPick/"+sindex, default_value=color, readonly=True, enable_events=True),
         sg.Button("X", tooltip="Remove Row", key="rmRow/"+sindex)
     ]]
 
@@ -55,7 +58,7 @@ layout = [
         sg.Combo(monthoptions, key="endMonth",  size=(5, 10), readonly=True, default_value="1"), 
         sg.Combo(dayoptions,   key="endDay",    size=(5, 10), readonly=True, default_value="10")
     ],
-    [sg.Button("Refresh", key="RefreshButton")],
+    [sg.Button("Refresh", key="Refresh")],
 
     [sg.Column(rowData, vertical_alignment='top'),
     sg.VSeperator(),
