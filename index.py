@@ -1,9 +1,10 @@
 # Created by Allen Mikhailov https://github.com/SlinkyShelf and Dev shroff https://github.com/kiwisontoast
 import inspect
+from tkinter import E
 import requests
 import datetime as dt
 import random
-import sys
+import sys, os
 import socket
 sys.executable
 
@@ -53,12 +54,12 @@ def Refresh(values):
     # Drawing all rows
     for i in range(index):
         try:
-            data = rowArray[i]
-            if not data: 
+            rowData = rowArray[i]
+            if not rowData: 
                 continue
 
             # Getting Data Pull type
-            dataPullType = data["dataPullType"]
+            dataPullType = rowData["dataPullType"]
             _input = values['dataInput/'+str(i)]
 
             # Getting Data Frame
@@ -67,7 +68,7 @@ def Refresh(values):
             data = df.values[:, int(values["columnInput/"+str(i)] or 0)]
 
             # Potting data
-            plotcolor = colors[values["colorPick/"+str(i)]]
+            plotcolor = colors[rowData["color"]]
 
             x=np.arange(len(data))
             y=data
@@ -82,12 +83,16 @@ def Refresh(values):
                 n = len(data)-1
                 axes[0].plot([0, n],[reg.predict([[0]])[0][0], reg.predict([[n]])[0][0]], '-', color = plotcolor)
 
-            figure_canvas_agg.draw()
-            figure_canvas_agg.get_tk_widget().pack()
-
             window["dataInput/"+str(i)].update(background_color = "white")
-        except:
+        except Exception as e:
+            print("Errored while Refreshing: ")
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(str(e), fname, exc_tb.tb_lineno)
+
             window["dataInput/"+str(i)].update(background_color = "red")
+    figure_canvas_agg.draw()
+    figure_canvas_agg.get_tk_widget().pack()
         
 
 while True:
@@ -106,9 +111,10 @@ while True:
     if event=='addRow':
         dataPullType = values["dataPullType"]
 
-        frame, layoutM = layout.CreateNewRow(values, index)
-
-        rowData = {"dataPullType": dataPullType, "obj": frame[0][0], "index": index, "layout": layoutM}
+        rowData = {"dataPullType": dataPullType, "index": index}
+        frame, layoutM = layout.CreateNewRow(values, rowData)
+        rowData["layout"] = layoutM
+        rowData["obj"] = frame[0][0]
 
         try:
             rowArray[index] = rowData
@@ -127,6 +133,7 @@ while True:
         rowArray[row] = None
     elif len(eventArgs) > 2 and eventArgs[1] == "colorInput":
         row = eventArgs[2]
+        rowArray[int(row)]["color"] = eventArgs[3]
         window["colorDisplay/"+row].update("", background_color=colors[eventArgs[3]])
 
     elif event=="Refresh":

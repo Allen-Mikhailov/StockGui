@@ -23,10 +23,12 @@ rowData = [
 
 canvas = [[sg.Canvas(key="Canvas")]]
 
-def CreateNewRow(values, index):
-    sindex = str(index)
+def CreateNewRow(values, data):
+    sindex = str(data["index"])
     color = random.choice(colorlist)
     dataPullType = values["dataPullType"]
+
+    data["color"] = color
 
     coloroptions = list(mpl.colors.TABLEAU_COLORS)
     for i in range(len(coloroptions)):
