@@ -9,6 +9,7 @@ import socket
 sys.executable
 
 import numpy as np
+import colorsM
 
 import PySimpleGUI as sg 
 
@@ -25,9 +26,8 @@ import dataPulling
 
 import layout
 
-colors = matplotlib.colors.CSS4_COLORS.copy()
-colors.update(matplotlib.colors.TABLEAU_COLORS)
-colorlist = list(colors)
+colors = colorsM.colors
+colorlist = colorsM.colorlist
 
 sg.theme("BlueMono")
 

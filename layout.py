@@ -3,11 +3,12 @@ import matplotlib as mpl
 import numpy as np
 import random
 
+import colorsM
+
 inputOptions = ["File", "yahoo"]
 
-colors = mpl.colors.CSS4_COLORS.copy()
-colors.update(mpl.colors.TABLEAU_COLORS)
-colorlist = list(colors)
+colors = colorsM.colors
+colorlist = colorsM.colorlist
 
 dayoptions = np.arange(1, 32).tolist()
 monthoptions = np.arange(1, 13).tolist()
